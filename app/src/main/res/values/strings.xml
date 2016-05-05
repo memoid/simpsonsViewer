@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Simpsons Character Viewer</string>
+    <string name="title_character_detail">Character Detail</string>
+    <string name="data_api">http://api.duckduckgo.com/</string>
+</resources>
