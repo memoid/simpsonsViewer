@@ -4,12 +4,8 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
     defaultConfig {
-        applicationId "com.xfinity.simpsonsviewer"
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
-        buildConfigField 'String', 'DATA_API', '"http://api.duckduckgo.com/"'
     }
     buildTypes {
         release {
@@ -18,10 +14,21 @@ android {
         }
     }
     productFlavors {
+        simpsons {
+            minSdkVersion 16
+            applicationId 'com.xfinity.simpsonsviewer'
+            targetSdkVersion 23
+            versionCode 1
+            versionName '1.0'
+            buildConfigField 'String', 'DATA_API', '"http://api.duckduckgo.com/"'
+        }
         starwars {
             applicationId 'com.xfinity.starwars'
             minSdkVersion 16
             targetSdkVersion 23
+            versionCode 1
+            versionName '1.0'
+            buildConfigField 'String', 'DATA_API', '"http://api.duckduckgo.com/"'
         }
     }
 }

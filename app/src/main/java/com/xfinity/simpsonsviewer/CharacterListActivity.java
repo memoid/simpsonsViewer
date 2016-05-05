@@ -1,22 +1,20 @@
 package com.xfinity.simpsonsviewer;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.xfinity.simpsonsviewer.dummy.DummyContent;
 import com.xfinity.simpsonsviewer.entity.RelatedTopic;
 import com.xfinity.simpsonsviewer.entity.Result;
 import com.xfinity.simpsonsviewer.service.DuckDuckService;
+import com.xfinity.simpsonsviewer.util.Converter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,8 +40,8 @@ public class CharacterListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
-    private List<RelatedTopic> characters = new ArrayList<>();
-    View recyclerView;
+    RecyclerView recyclerView;
+    CharacterAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +53,8 @@ public class CharacterListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        recyclerView = findViewById(R.id.character_list);
-        assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        recyclerView = (RecyclerView) findViewById(R.id.character_list);
+
 
         if (findViewById(R.id.character_detail_container) != null) {
             // The detail container view will be present only in the
@@ -68,11 +65,49 @@ public class CharacterListActivity extends AppCompatActivity {
         }
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(characters));
+    public class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.ViewHolder> {
+
+        private List<RelatedTopic> relatedTopics = new ArrayList<>();
+
+        public CharacterAdapter(List<RelatedTopic> relatedTopics) {
+            this.relatedTopics.addAll(relatedTopics);
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.activity_character_list, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            holder.relatedTopic = relatedTopics.get(position);
+            Log.v("aqui", new Converter().convertName(holder.relatedTopic.getText()));
+            holder.textView.setText("hola");
+        }
+
+        @Override
+        public int getItemCount() {
+            return relatedTopics.size();
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+
+            public final TextView textView;
+            public final View view;
+            public RelatedTopic relatedTopic;
+
+            public ViewHolder(View view) {
+                super(view);
+                this.view = view;
+                textView = (TextView) view.findViewById(R.id.content);
+            }
+
+        }
     }
 
-    public class SimpleItemRecyclerViewAdapter
+/*    public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
         private final List<DummyContent.Character> characters = new ArrayList<DummyContent.Character>() {
@@ -94,7 +129,6 @@ public class CharacterListActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = characters.get(position);
-            holder.mIdView.setText(characters.get(position).id);
             holder.mContentView.setText(characters.get(position).content);
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -126,14 +160,12 @@ public class CharacterListActivity extends AppCompatActivity {
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             public final View mView;
-            public final TextView mIdView;
             public final TextView mContentView;
             public DummyContent.Character mItem;
 
             public ViewHolder(View view) {
                 super(view);
                 mView = view;
-                mIdView = (TextView) view.findViewById(R.id.id);
                 mContentView = (TextView) view.findViewById(R.id.content);
             }
 
@@ -142,7 +174,7 @@ public class CharacterListActivity extends AppCompatActivity {
                 return super.toString() + " '" + mContentView.getText() + "'";
             }
         }
-    }
+    }*/
 
     private class GetCharactersTask extends AsyncTask<Void, Void, List<RelatedTopic>> {
 
@@ -171,8 +203,8 @@ public class CharacterListActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(List<RelatedTopic> relatedTopics) {
-            characters = relatedTopics;
-            setupRecyclerView((RecyclerView) recyclerView);
+            adapter = new CharacterAdapter(relatedTopics);
+            recyclerView.setAdapter(adapter);
         }
     }
 
