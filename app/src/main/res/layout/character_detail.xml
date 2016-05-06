@@ -1,4 +1,4 @@
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/character_detail"
     style="?android:attr/textAppearanceLarge"
@@ -6,4 +6,19 @@
     android:layout_height="match_parent"
     android:padding="16dp"
     android:textIsSelectable="true"
-    tools:context="com.xfinity.simpsonsviewer.CharacterDetailFragment" />
+    tools:context="com.xfinity.simpsonsviewer.CharacterDetailFragment"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/imageCharacter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
+</LinearLayout>

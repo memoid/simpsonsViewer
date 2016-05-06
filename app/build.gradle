@@ -6,6 +6,7 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 23
+        buildConfigField 'String', 'DATA_API', '"http://api.duckduckgo.com/"'
     }
     buildTypes {
         release {
@@ -20,7 +21,7 @@ android {
             targetSdkVersion 23
             versionCode 1
             versionName '1.0'
-            buildConfigField 'String', 'DATA_API', '"http://api.duckduckgo.com/"'
+            resValue "string", "app_name", '"Simpsons Viewer"'
         }
         starwars {
             applicationId 'com.xfinity.starwars'
@@ -28,7 +29,7 @@ android {
             targetSdkVersion 23
             versionCode 1
             versionName '1.0'
-            buildConfigField 'String', 'DATA_API', '"http://api.duckduckgo.com/"'
+            resValue "string", "app_name", '"Star Wars Character Viewer"'
         }
     }
 }
@@ -42,4 +43,5 @@ dependencies {
     compile 'com.android.support:design:23.3.0'
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
 }

@@ -11,4 +11,8 @@ public class Converter {
 
     }
 
+    public String convertDescription(String description) {
+        return description.split(" - ")[1];
+    }
+
 }

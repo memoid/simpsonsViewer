@@ -1,15 +1,17 @@
 package com.xfinity.simpsonsviewer;
 
 import android.app.Activity;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.xfinity.simpsonsviewer.dummy.DummyContent;
+import com.bumptech.glide.Glide;
+import com.xfinity.simpsonsviewer.util.Converter;
 
 /**
  * A fragment representing a single Character detail screen.
@@ -22,12 +24,13 @@ public class CharacterDetailFragment extends Fragment {
      * The fragment argument representing the item ID that this fragment
      * represents.
      */
-    public static final String ARG_ITEM_ID = "item_id";
+    public static final String CHARACTER_TEXT = "character_text";
+    public static final String CHARACTER_IMAGE = "character_image";
 
     /**
      * The dummy content this fragment is presenting.
      */
-    private DummyContent.Character mItem;
+    private String characterText, characterImage;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -40,16 +43,18 @@ public class CharacterDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
+        if (getArguments().containsKey(CHARACTER_TEXT)) {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+            characterText = getArguments().get(CHARACTER_TEXT).toString();
+            characterImage = getArguments().get(CHARACTER_IMAGE).toString();
+
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
-                appBarLayout.setTitle(mItem.content);
+                appBarLayout.setTitle(new Converter().convertName(characterText));
             }
         }
     }
@@ -60,8 +65,14 @@ public class CharacterDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.character_detail, container, false);
 
         // Show the dummy content as text in a TextView.
-        if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.character_detail)).setText(mItem.details);
+        if (!characterText.equals("")) {
+            ((TextView) rootView.findViewById(R.id.textDesc)).setText(new Converter().convertDescription(characterText));
+        }
+        if (!characterImage.equals("")) {
+            Glide.with(getActivity()).load(characterImage).into((ImageView) rootView.findViewById(R.id.imageCharacter));
+        } else {
+            String url = "http://nerdreactor.com/wp-content/uploads/2012/12/Link.jpg";
+            Glide.with(getActivity()).load(url).into((ImageView) rootView.findViewById(R.id.imageCharacter));
         }
 
         return rootView;
