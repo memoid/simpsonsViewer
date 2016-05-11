@@ -16,20 +16,18 @@ android {
     }
     productFlavors {
         simpsons {
-            minSdkVersion 16
             applicationId 'com.xfinity.simpsonsviewer'
-            targetSdkVersion 23
             versionCode 1
             versionName '1.0'
-            resValue "string", "app_name", '"Simpsons Viewer"'
+            resValue "string", "app_name", 'Simpsons Character Viewer'
+            resValue "string", "character_url", 'simpsons characters'
         }
         starwars {
             applicationId 'com.xfinity.starwars'
-            minSdkVersion 16
-            targetSdkVersion 23
             versionCode 1
             versionName '1.0'
             resValue "string", "app_name", '"Star Wars Character Viewer"'
+            resValue "string", "character_url", 'star wars characters'
         }
     }
 }

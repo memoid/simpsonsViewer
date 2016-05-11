@@ -109,6 +109,7 @@ public class CharacterListActivity extends AppCompatActivity {
                                 holder.relatedTopic.getIcon().getURL());
 
                         context.startActivity(intent);
+                        overridePendingTransition(R.anim.left_in, R.anim.left_out);
                     }
                 }
             });
@@ -146,9 +147,7 @@ public class CharacterListActivity extends AppCompatActivity {
             DuckDuckService duckDuckService = retrofit.create(DuckDuckService.class);
 
             Call<Result> listCharacters = duckDuckService.listCharacters(
-                    getString(
-                            BuildConfig.FLAVOR.equals("simpsons") ? R.string.simpsons_characters : R.string.starwars_characters
-                    )
+                    getString(R.string.character_url)
             );
 
             Result result = null;
