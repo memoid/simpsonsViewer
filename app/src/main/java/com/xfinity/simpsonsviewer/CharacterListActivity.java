@@ -2,6 +2,8 @@ package com.xfinity.simpsonsviewer;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.xfinity.simpsonsviewer.entity.CharacterEntity;
+import com.xfinity.simpsonsviewer.entity.DBCharacterHelper;
 import com.xfinity.simpsonsviewer.entity.RelatedTopic;
 import com.xfinity.simpsonsviewer.entity.Result;
 import com.xfinity.simpsonsviewer.service.DuckDuckService;
@@ -43,10 +47,24 @@ public class CharacterListActivity extends AppCompatActivity {
     private boolean mTwoPane;
     RecyclerView recyclerView;
     CharacterAdapter adapter;
+    DBCharacterHelper dbHelper;
+    boolean isConnected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        System.out.println("Averts::::");
+        if (activeNetwork!=null) {
+            isConnected = activeNetwork.isConnectedOrConnecting();
+        } else {
+            isConnected = false;
+        }
+
+
+        dbHelper = new DBCharacterHelper(this);
+
         new GetCharactersTask().execute();
         setContentView(R.layout.activity_character_list);
 
@@ -68,10 +86,10 @@ public class CharacterListActivity extends AppCompatActivity {
 
     public class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.ViewHolder> {
 
-        private List<RelatedTopic> relatedTopics = new ArrayList<>();
+        private List<CharacterEntity> characterEntities = new ArrayList<>();
 
-        public CharacterAdapter(List<RelatedTopic> relatedTopics) {
-            this.relatedTopics.addAll(relatedTopics);
+        public CharacterAdapter(List<CharacterEntity> characterEntities) {
+            this.characterEntities.addAll(characterEntities);
         }
 
         @Override
@@ -83,30 +101,35 @@ public class CharacterListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
-            holder.relatedTopic = relatedTopics.get(position);
-            holder.textView.setText(new Converter().convertName(holder.relatedTopic.getText()));
+            holder.characterEntity = characterEntities.get(position);
+            holder.textView.setText(holder.characterEntity.getName());
 
             holder.view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
-                        arguments.putString(CharacterDetailFragment.CHARACTER_TEXT,
-                                holder.relatedTopic.getText());
+                        arguments.putString(CharacterDetailFragment.CHARACTER_NAME,
+                                holder.characterEntity.getName());
+                        arguments.putString(CharacterDetailFragment.CHARACTER_DESCRIPTION,
+                                holder.characterEntity.getDescription());
                         arguments.putString(CharacterDetailFragment.CHARACTER_IMAGE,
-                                holder.relatedTopic.getIcon().getURL());
+                                holder.characterEntity.getUrl());
                         CharacterDetailFragment fragment = new CharacterDetailFragment();
                         fragment.setArguments(arguments);
                         getSupportFragmentManager().beginTransaction()
+                                .setCustomAnimations(R.anim.right_in, 0)
                                 .replace(R.id.character_detail_container, fragment)
                                 .commit();
                     } else {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, CharacterDetailActivity.class);
-                        intent.putExtra(CharacterDetailFragment.CHARACTER_TEXT,
-                                holder.relatedTopic.getText());
+                        intent.putExtra(CharacterDetailFragment.CHARACTER_NAME,
+                                holder.characterEntity.getName());
+                        intent.putExtra(CharacterDetailFragment.CHARACTER_DESCRIPTION,
+                                holder.characterEntity.getDescription());
                         intent.putExtra(CharacterDetailFragment.CHARACTER_IMAGE,
-                                holder.relatedTopic.getIcon().getURL());
+                                holder.characterEntity.getUrl());
 
                         context.startActivity(intent);
                         overridePendingTransition(R.anim.left_in, R.anim.left_out);
@@ -117,14 +140,14 @@ public class CharacterListActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return relatedTopics.size();
+            return characterEntities.size();
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder {
 
             public final TextView textView;
             public final View view;
-            public RelatedTopic relatedTopic;
+            public CharacterEntity characterEntity;
 
             public ViewHolder(View view) {
                 super(view);
@@ -135,36 +158,48 @@ public class CharacterListActivity extends AppCompatActivity {
         }
     }
 
-    private class GetCharactersTask extends AsyncTask<Void, Void, List<RelatedTopic>> {
+    private class GetCharactersTask extends AsyncTask<Void, Void, List<CharacterEntity>> {
 
         @Override
-        protected List<RelatedTopic> doInBackground(Void... params) {
+        protected List<CharacterEntity> doInBackground(Void... params) {
 
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(BuildConfig.DATA_API)
-                    .addConverterFactory(create())
-                    .build();
-            DuckDuckService duckDuckService = retrofit.create(DuckDuckService.class);
+            if (isConnected) {
+            //if(false) {
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(BuildConfig.DATA_API)
+                        .addConverterFactory(create())
+                        .build();
+                DuckDuckService duckDuckService = retrofit.create(DuckDuckService.class);
 
-            Call<Result> listCharacters = duckDuckService.listCharacters(
-                    getString(R.string.character_url)
-            );
+                Call<Result> listCharacters = duckDuckService.listCharacters(
+                        getString(R.string.character_url)
+                );
 
-            Result result = null;
+                Result result = null;
 
-            try {
-                result = listCharacters.execute().body();
-            } catch (IOException e) {
-                e.printStackTrace();
+                try {
+                    result = listCharacters.execute().body();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                for (RelatedTopic relatedTopic : result.getRelatedTopics()) {
+                    dbHelper.upsert(new Converter().convertName(relatedTopic.getText()),
+                            new Converter().convertDescription(relatedTopic.getText()),
+                            relatedTopic.getIcon().getURL());
+                }
+
             }
 
-            return result != null ? result.getRelatedTopics() : null;
+
+            //return result != null ? result.getRelatedTopics() : null;
+            return dbHelper.getAllCharacters();
 
         }
 
         @Override
-        protected void onPostExecute(List<RelatedTopic> relatedTopics) {
-            adapter = new CharacterAdapter(relatedTopics);
+        protected void onPostExecute(List<CharacterEntity> characterEntities) {
+            adapter = new CharacterAdapter(characterEntities);
             recyclerView.setAdapter(adapter);
         }
     }
