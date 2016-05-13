@@ -45,9 +45,10 @@ public class DBCharacterHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean upsert(String name, String description, String charImage) {
+    public boolean insert(String name, String description, String charImage) {
 
         SQLiteDatabase db = this.getReadableDatabase();
+
         /*String sqlExe = "insert into "
                 + CHARACTER_TABLE + " ("
                 + CHARACTER_NAME + ", "
@@ -57,11 +58,15 @@ public class DBCharacterHelper extends SQLiteOpenHelper {
                 + ", " + description + ", " + charImage +")"
                 + " where "
                 + CHARACTER_NAME + " = " + name;*/
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(CHARACTER_NAME, name);
-        contentValues.put(CHARACTER_DESCRIPTION, description);
-        contentValues.put(CHARACTER_IMAGE, charImage);
-        db.insert(CHARACTER_TABLE, null, contentValues);
+        Cursor res = db.rawQuery("select * from " + CHARACTER_TABLE + " where " + CHARACTER_NAME + " = \"" + name + "\"", null);
+        if (res.getCount()<=0) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(CHARACTER_NAME, name);
+            contentValues.put(CHARACTER_DESCRIPTION, description);
+            contentValues.put(CHARACTER_IMAGE, charImage);
+            db.insert(CHARACTER_TABLE, null, contentValues);
+        }
+
         return true;
 
     }

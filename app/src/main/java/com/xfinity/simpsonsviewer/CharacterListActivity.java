@@ -55,7 +55,6 @@ public class CharacterListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        System.out.println("Averts::::");
         if (activeNetwork!=null) {
             isConnected = activeNetwork.isConnectedOrConnecting();
         } else {
@@ -164,7 +163,6 @@ public class CharacterListActivity extends AppCompatActivity {
         protected List<CharacterEntity> doInBackground(Void... params) {
 
             if (isConnected) {
-            //if(false) {
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl(BuildConfig.DATA_API)
                         .addConverterFactory(create())
@@ -184,7 +182,7 @@ public class CharacterListActivity extends AppCompatActivity {
                 }
 
                 for (RelatedTopic relatedTopic : result.getRelatedTopics()) {
-                    dbHelper.upsert(new Converter().convertName(relatedTopic.getText()),
+                    dbHelper.insert(new Converter().convertName(relatedTopic.getText()),
                             new Converter().convertDescription(relatedTopic.getText()),
                             relatedTopic.getIcon().getURL());
                 }
