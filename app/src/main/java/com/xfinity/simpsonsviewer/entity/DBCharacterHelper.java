@@ -22,10 +22,11 @@ public class DBCharacterHelper extends SQLiteOpenHelper {
     public static final String CHARACTER_NAME = "name";
     public static final String CHARACTER_DESCRIPTION = "description";
     public static final String CHARACTER_IMAGE = "imageurl";
+    public static final String FAVORITE = "favorite";
 
 
     public DBCharacterHelper(Context context) {
-        super(context, context.getResources().getString(R.string.database_name), null , 2);
+        super(context, context.getResources().getString(R.string.database_name), null , 3);
         DATABASE_NAME = context.getResources().getString(R.string.database_name);
     }
 
@@ -35,7 +36,9 @@ public class DBCharacterHelper extends SQLiteOpenHelper {
                 + CHARACTER_ID + " integer primary key, "
                 + CHARACTER_NAME + " text unique, "
                 + CHARACTER_DESCRIPTION + " text, "
-                + CHARACTER_IMAGE + " text)";
+                + CHARACTER_IMAGE + " text, "
+                + FAVORITE + " integer " +
+                ")";
         db.execSQL(sqlExe);
     }
 
@@ -87,6 +90,58 @@ public class DBCharacterHelper extends SQLiteOpenHelper {
         }
 
         return allCharacters;
+    }
+
+    public List<CharacterEntity> getAllFavorites() {
+        List<CharacterEntity> allCharacters = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + CHARACTER_TABLE + " where "
+                + FAVORITE + " = 1 ", null);
+
+        if (cursor == null) {
+            return null;
+        } else if (!cursor.moveToFirst()) {
+            cursor.close();
+            return null;
+        }
+
+        while (!cursor.isAfterLast()) {
+            CharacterEntity characterEntity = new CharacterEntity();
+            characterEntity.setName(cursor.getString(cursor.getColumnIndex(CHARACTER_NAME)));
+            characterEntity.setDescription(cursor.getString(cursor.getColumnIndex(CHARACTER_DESCRIPTION)));
+            characterEntity.setUrl(cursor.getString(cursor.getColumnIndex(CHARACTER_IMAGE)));
+            allCharacters.add(characterEntity);
+            cursor.moveToNext();
+        }
+
+        return allCharacters;
+    }
+
+    public List<CharacterEntity> searchCharacters(String query) {
+
+        List<CharacterEntity> searchedCharacters = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from " + CHARACTER_TABLE + " where " + CHARACTER_NAME + " like \"%" + query + "%\" "
+                //+ " or " + CHARACTER_DESCRIPTION + " like \"%" + query + "%\""
+                , null);
+
+        if (cursor == null) {
+            return null;
+        } else if (!cursor.moveToFirst()) {
+            cursor.close();
+            return null;
+        }
+
+        while (!cursor.isAfterLast()) {
+            CharacterEntity characterEntity = new CharacterEntity();
+            characterEntity.setName(cursor.getString(cursor.getColumnIndex(CHARACTER_NAME)));
+            characterEntity.setDescription(cursor.getString(cursor.getColumnIndex(CHARACTER_DESCRIPTION)));
+            characterEntity.setUrl(cursor.getString(cursor.getColumnIndex(CHARACTER_IMAGE)));
+            searchedCharacters.add(characterEntity);
+            cursor.moveToNext();
+        }
+
+        return searchedCharacters;
     }
 
 }

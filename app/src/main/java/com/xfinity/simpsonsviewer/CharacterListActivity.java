@@ -1,5 +1,6 @@
 package com.xfinity.simpsonsviewer;
 
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -8,8 +9,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -63,8 +68,14 @@ public class CharacterListActivity extends AppCompatActivity {
 
 
         dbHelper = new DBCharacterHelper(this);
+        adapter = new CharacterAdapter();
 
-        new GetCharactersTask().execute();
+        if (dbHelper.getAllCharacters().isEmpty()) {
+            new GetCharactersTask().execute();
+        } else {
+            adapter.characterEntities = dbHelper.getAllCharacters();
+        }
+
         setContentView(R.layout.activity_character_list);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -72,6 +83,7 @@ public class CharacterListActivity extends AppCompatActivity {
         toolbar.setTitle(getTitle());
 
         recyclerView = (RecyclerView) findViewById(R.id.character_list);
+        recyclerView.setAdapter(adapter);
 
 
         if (findViewById(R.id.character_detail_container) != null) {
@@ -81,15 +93,61 @@ public class CharacterListActivity extends AppCompatActivity {
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
+
+        handleIntent(getIntent());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.options_menu, menu);
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        final SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.search:
+                onSearchRequested();
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        //super.onNewIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+
+            adapter.characterEntities = dbHelper.searchCharacters(query);
+            adapter.notifyDataSetChanged();
+            //recyclerView.setAdapter(adapter);
+        }
+
     }
 
     public class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.ViewHolder> {
 
         private List<CharacterEntity> characterEntities = new ArrayList<>();
 
-        public CharacterAdapter(List<CharacterEntity> characterEntities) {
+        public CharacterAdapter(){}
+
+        /*public CharacterAdapter(List<CharacterEntity> characterEntities) {
             this.characterEntities.addAll(characterEntities);
-        }
+        }*/
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -139,6 +197,9 @@ public class CharacterListActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
+            if (characterEntities == null) {
+                return 0;
+            }
             return characterEntities.size();
         }
 
@@ -197,7 +258,8 @@ public class CharacterListActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(List<CharacterEntity> characterEntities) {
-            adapter = new CharacterAdapter(characterEntities);
+            System.out.println("Post Excecute");
+            adapter.characterEntities = characterEntities;// = new CharacterAdapter(characterEntities);
             recyclerView.setAdapter(adapter);
         }
     }

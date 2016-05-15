@@ -1,6 +1,8 @@
 <resources>
     <string name="title_character_detail">Character Detail</string>
     <string name="data_api">http://api.duckduckgo.com/</string>
-   <!-- <string name="simpsons_characters">simpsons characters</string>
-    <string name="starwars_characters">star wars characters</string>-->
+    <string name="search_character">Search character</string>
+    <string name="search_hint">Characters</string>
+    <!-- <string name="simpsons_characters">simpsons characters</string>
+     <string name="starwars_characters">star wars characters</string>-->
 </resources>
