@@ -26,7 +26,7 @@ public class DBCharacterHelper extends SQLiteOpenHelper {
 
 
     public DBCharacterHelper(Context context) {
-        super(context, context.getResources().getString(R.string.database_name), null , 3);
+        super(context, context.getResources().getString(R.string.database_name), null , 4);
         DATABASE_NAME = context.getResources().getString(R.string.database_name);
     }
 
@@ -37,7 +37,7 @@ public class DBCharacterHelper extends SQLiteOpenHelper {
                 + CHARACTER_NAME + " text unique, "
                 + CHARACTER_DESCRIPTION + " text, "
                 + CHARACTER_IMAGE + " text, "
-                + FAVORITE + " integer " +
+                + FAVORITE + " text " +
                 ")";
         db.execSQL(sqlExe);
     }
@@ -52,26 +52,23 @@ public class DBCharacterHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getReadableDatabase();
 
-        /*String sqlExe = "insert into "
-                + CHARACTER_TABLE + " ("
-                + CHARACTER_NAME + ", "
-                + CHARACTER_DESCRIPTION + ", "
-                + CHARACTER_IMAGE + ") "
-                + "values (" + name
-                + ", " + description + ", " + charImage +")"
-                + " where "
-                + CHARACTER_NAME + " = " + name;*/
         Cursor res = db.rawQuery("select * from " + CHARACTER_TABLE + " where " + CHARACTER_NAME + " = \"" + name + "\"", null);
         if (res.getCount()<=0) {
             ContentValues contentValues = new ContentValues();
             contentValues.put(CHARACTER_NAME, name);
             contentValues.put(CHARACTER_DESCRIPTION, description);
             contentValues.put(CHARACTER_IMAGE, charImage);
+            contentValues.put(FAVORITE, "0");
             db.insert(CHARACTER_TABLE, null, contentValues);
         }
 
         return true;
 
+    }
+
+    public void saveFavorite(String name) {
+        this.getReadableDatabase().execSQL("update " + CHARACTER_TABLE + " set " + FAVORITE + " = '1' " +
+                "where " + CHARACTER_NAME + " = \"" + name + "\"" );
     }
 
     public List<CharacterEntity> getAllCharacters() {
@@ -85,6 +82,7 @@ public class DBCharacterHelper extends SQLiteOpenHelper {
             characterEntity.setName(cursor.getString(cursor.getColumnIndex(CHARACTER_NAME)));
             characterEntity.setDescription(cursor.getString(cursor.getColumnIndex(CHARACTER_DESCRIPTION)));
             characterEntity.setUrl(cursor.getString(cursor.getColumnIndex(CHARACTER_IMAGE)));
+            characterEntity.setIsFavorite(cursor.getString(cursor.getColumnIndex(FAVORITE)));
             allCharacters.add(characterEntity);
             cursor.moveToNext();
         }
@@ -96,7 +94,7 @@ public class DBCharacterHelper extends SQLiteOpenHelper {
         List<CharacterEntity> allCharacters = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("select * from " + CHARACTER_TABLE + " where "
-                + FAVORITE + " = 1 ", null);
+                + FAVORITE + " = \"1\" ", null);
 
         if (cursor == null) {
             return null;
@@ -110,9 +108,14 @@ public class DBCharacterHelper extends SQLiteOpenHelper {
             characterEntity.setName(cursor.getString(cursor.getColumnIndex(CHARACTER_NAME)));
             characterEntity.setDescription(cursor.getString(cursor.getColumnIndex(CHARACTER_DESCRIPTION)));
             characterEntity.setUrl(cursor.getString(cursor.getColumnIndex(CHARACTER_IMAGE)));
+            characterEntity.setIsFavorite(cursor.getString(cursor.getColumnIndex(FAVORITE)));
             allCharacters.add(characterEntity);
             cursor.moveToNext();
         }
+
+            for (CharacterEntity ce : allCharacters) {
+                System.out.println(ce.getName());
+            }
 
         return allCharacters;
     }
@@ -137,6 +140,7 @@ public class DBCharacterHelper extends SQLiteOpenHelper {
             characterEntity.setName(cursor.getString(cursor.getColumnIndex(CHARACTER_NAME)));
             characterEntity.setDescription(cursor.getString(cursor.getColumnIndex(CHARACTER_DESCRIPTION)));
             characterEntity.setUrl(cursor.getString(cursor.getColumnIndex(CHARACTER_IMAGE)));
+            characterEntity.setIsFavorite(cursor.getString(cursor.getColumnIndex(FAVORITE)));
             searchedCharacters.add(characterEntity);
             cursor.moveToNext();
         }

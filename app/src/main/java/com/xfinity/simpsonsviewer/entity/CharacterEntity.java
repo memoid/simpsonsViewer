@@ -6,14 +6,9 @@ package com.xfinity.simpsonsviewer.entity;
 public class CharacterEntity {
 
     private String name, description, url;
+    private String isFavorite;
 
     CharacterEntity() {}
-
-    CharacterEntity(String name, String description, String url) {
-        this.name = name;
-        this.description = description;
-        this.url = url;
-    }
 
     public void setName(String name) {
         this.name = name;
@@ -37,5 +32,13 @@ public class CharacterEntity {
 
     public String getUrl() {
         return url;
+    }
+
+    public String getIsFavorite() {
+        return isFavorite;
+    }
+
+    public void setIsFavorite(String isFavorite) {
+        this.isFavorite = isFavorite;
     }
 }

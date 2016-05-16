@@ -8,12 +8,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 /**
- * An activity representing a single Character detail screen. This
+ * An activity representing a single FavoriteCharacter detail screen. This
  * activity is only used narrow width devices. On tablet-size devices,
  * item details are presented side-by-side with a list of items
- * in a {@link CharacterListActivity}.
+ * in a {@link FavoriteCharacterListActivity}.
  */
-public class CharacterDetailActivity extends AppCompatActivity {
+public class FavoriteCharacterDetailActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +52,6 @@ public class CharacterDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-
             navigateUpTo(new Intent(this, CharacterListActivity.class));
             overridePendingTransition(R.anim.right_in, R.anim.right_out);
             return true;
@@ -65,5 +64,4 @@ public class CharacterDetailActivity extends AppCompatActivity {
         super.onBackPressed();
         overridePendingTransition(R.anim.right_in, R.anim.right_out);
     }
-
 }

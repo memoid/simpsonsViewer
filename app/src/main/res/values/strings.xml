@@ -3,6 +3,8 @@
     <string name="data_api">http://api.duckduckgo.com/</string>
     <string name="search_character">Search character</string>
     <string name="search_hint">Characters</string>
+    <string name="title_favoritecharacter_list">FavoriteCharacters</string>
+    <string name="title_favoritecharacter_detail">FavoriteCharacter Detail</string>
     <!-- <string name="simpsons_characters">simpsons characters</string>
      <string name="starwars_characters">star wars characters</string>-->
 </resources>

@@ -21,29 +21,19 @@ import android.widget.TextView;
 
 import com.xfinity.simpsonsviewer.entity.CharacterEntity;
 import com.xfinity.simpsonsviewer.entity.DBCharacterHelper;
-import com.xfinity.simpsonsviewer.entity.RelatedTopic;
-import com.xfinity.simpsonsviewer.entity.Result;
-import com.xfinity.simpsonsviewer.service.DuckDuckService;
-import com.xfinity.simpsonsviewer.util.Converter;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Retrofit;
-
-import static retrofit2.converter.gson.GsonConverterFactory.create;
-
 /**
- * An activity representing a list of Characters. This activity
+ * An activity representing a list of FavoriteCharacters. This activity
  * has different presentations for handset and tablet-size devices. On
  * handsets, the activity presents a list of items, which when touched,
- * lead to a {@link CharacterDetailActivity} representing
+ * lead to a {@link FavoriteCharacterDetailActivity} representing
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class CharacterListActivity extends AppCompatActivity {
+public class FavoriteCharacterListActivity extends AppCompatActivity {
 
     private boolean mTwoPane;
     RecyclerView recyclerView;
@@ -69,7 +59,8 @@ public class CharacterListActivity extends AppCompatActivity {
         if (dbHelper.getAllCharacters().isEmpty()) {
             new GetCharactersTask().execute();
         } else {
-            adapter.characterEntities = dbHelper.getAllCharacters();
+            System.out.println("Entra a getAllFavorites");
+            adapter.characterEntities = dbHelper.getAllFavorites();
         }
 
         setContentView(R.layout.activity_character_list);
@@ -108,8 +99,6 @@ public class CharacterListActivity extends AppCompatActivity {
             case R.id.search:
                 onSearchRequested();
                 return true;
-            case R.id.favorites:
-                startActivity(new Intent(this, FavoriteCharacterListActivity.class));
             default:
                 return false;
         }
@@ -220,37 +209,8 @@ public class CharacterListActivity extends AppCompatActivity {
 
         @Override
         protected List<CharacterEntity> doInBackground(Void... params) {
-
-            if (isConnected) {
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(BuildConfig.DATA_API)
-                        .addConverterFactory(create())
-                        .build();
-                DuckDuckService duckDuckService = retrofit.create(DuckDuckService.class);
-
-                Call<Result> listCharacters = duckDuckService.listCharacters(
-                        getString(R.string.character_url)
-                );
-
-                Result result = null;
-
-                try {
-                    result = listCharacters.execute().body();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                for (RelatedTopic relatedTopic : result.getRelatedTopics()) {
-                    dbHelper.insert(new Converter().convertName(relatedTopic.getText()),
-                            new Converter().convertDescription(relatedTopic.getText()),
-                            relatedTopic.getIcon().getURL());
-                }
-
-            }
-
-
             //return result != null ? result.getRelatedTopics() : null;
-            return dbHelper.getAllCharacters();
+            return dbHelper.getAllFavorites();
 
         }
 
@@ -263,3 +223,4 @@ public class CharacterListActivity extends AppCompatActivity {
     }
 
 }
+
