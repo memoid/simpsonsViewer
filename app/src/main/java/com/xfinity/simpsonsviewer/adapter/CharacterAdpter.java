@@ -48,7 +48,6 @@ public class CharacterAdpter extends RecyclerView.Adapter<CharacterAdpter.ViewHo
             @Override
             public void onClick(View v) {
                 if (twoPane) {
-                    System.out.println(":::::Entra a twopane adapter");
                     Bundle arguments = new Bundle();
                     arguments.putString(CharacterDetailFragment.CHARACTER_NAME,
                             holder.characterEntity.getName());

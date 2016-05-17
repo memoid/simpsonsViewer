@@ -113,10 +113,6 @@ public class DBCharacterHelper extends SQLiteOpenHelper {
             cursor.moveToNext();
         }
 
-            for (CharacterEntity ce : allCharacters) {
-                System.out.println(ce.getName());
-            }
-
         return allCharacters;
     }
 

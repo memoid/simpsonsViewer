@@ -162,15 +162,13 @@ public class CharacterListActivity extends AppCompatActivity {
             }
 
 
-            //return result != null ? result.getRelatedTopics() : null;
             return dbHelper.getAllCharacters();
 
         }
 
         @Override
         protected void onPostExecute(List<CharacterEntity> characterEntities) {
-            System.out.println("Post Excecute");
-            adapter.characterEntities = characterEntities;// = new CharacterAdapter(characterEntities);
+            adapter.characterEntities = characterEntities;
             recyclerView.setAdapter(adapter);
         }
     }

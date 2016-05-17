@@ -26,14 +26,6 @@ import com.xfinity.simpsonsviewer.entity.DBCharacterHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * An activity representing a list of FavoriteCharacters. This activity
- * has different presentations for handset and tablet-size devices. On
- * handsets, the activity presents a list of items, which when touched,
- * lead to a {@link FavoriteCharacterDetailActivity} representing
- * item details. On tablets, the activity presents the list of items and
- * item details side-by-side using two vertical panes.
- */
 public class FavoriteCharacterListActivity extends AppCompatActivity {
 
     private boolean mTwoPane;
@@ -94,7 +86,6 @@ public class FavoriteCharacterListActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        //return super.onOptionsItemSelected(item);
         switch (item.getItemId()) {
             case R.id.search:
                 onSearchRequested();
@@ -106,7 +97,6 @@ public class FavoriteCharacterListActivity extends AppCompatActivity {
 
     @Override
     protected void onNewIntent(Intent intent) {
-        //super.onNewIntent(intent);
         handleIntent(intent);
     }
 
@@ -126,15 +116,13 @@ public class FavoriteCharacterListActivity extends AppCompatActivity {
 
         @Override
         protected List<CharacterEntity> doInBackground(Void... params) {
-            //return result != null ? result.getRelatedTopics() : null;
             return dbHelper.getAllFavorites();
 
         }
 
         @Override
         protected void onPostExecute(List<CharacterEntity> characterEntities) {
-            System.out.println("Post Excecute");
-            adapter.characterEntities = characterEntities;// = new CharacterAdapter(characterEntities);
+            adapter.characterEntities = characterEntities;
             recyclerView.setAdapter(adapter);
         }
     }
