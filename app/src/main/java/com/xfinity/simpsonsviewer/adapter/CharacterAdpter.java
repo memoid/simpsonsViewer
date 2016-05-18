@@ -8,8 +8,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.xfinity.simpsonsviewer.CharacterDetailActivity;
 import com.xfinity.simpsonsviewer.CharacterDetailFragment;
 import com.xfinity.simpsonsviewer.R;
@@ -26,6 +28,7 @@ public class CharacterAdpter extends RecyclerView.Adapter<CharacterAdpter.ViewHo
     public List<CharacterEntity> characterEntities = new ArrayList<>();
     private boolean twoPane;
     private AppCompatActivity activity;
+    public boolean isImage = false;
 
     public CharacterAdpter(AppCompatActivity activity, boolean twoPane) {
         this.twoPane = twoPane;
@@ -42,7 +45,22 @@ public class CharacterAdpter extends RecyclerView.Adapter<CharacterAdpter.ViewHo
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.characterEntity = characterEntities.get(position);
-        holder.textView.setText(holder.characterEntity.getName());
+        if (isImage) {
+            holder.imageView.setVisibility(View.GONE);
+            holder.textView.setVisibility(View.VISIBLE);
+            holder.textView.setText(holder.characterEntity.getName());
+        } else {
+            holder.imageView.setVisibility(View.VISIBLE);
+            holder.textView.setVisibility(View.GONE);
+            if (holder.characterEntity!=null) {
+                if (!holder.characterEntity.getUrl().equals("")) {
+                    Glide.with(activity).load(holder.characterEntity.getUrl()).into(holder.imageView);
+                } else {
+                    String url = "http://nerdreactor.com/wp-content/uploads/2012/12/Link.jpg";
+                    Glide.with(activity).load(url).into(holder.imageView);
+                }
+            }
+        }
 
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,16 +110,18 @@ public class CharacterAdpter extends RecyclerView.Adapter<CharacterAdpter.ViewHo
         return characterEntities.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder{
 
         public final TextView textView;
         public final View view;
         public CharacterEntity characterEntity;
+        public final ImageView imageView;
 
         public ViewHolder (View view) {
             super(view);
             this.view = view;
             textView = (TextView) view.findViewById(R.id.content);
+            imageView = (ImageView) view.findViewById(R.id.image_id_rec);
         }
 
     }

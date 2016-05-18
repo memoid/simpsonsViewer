@@ -8,6 +8,8 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -41,7 +43,7 @@ import static retrofit2.converter.gson.GsonConverterFactory.create;
  */
 public class CharacterListActivity extends AppCompatActivity {
 
-    private boolean mTwoPane;
+    private boolean mTwoPane, isGrid;
     RecyclerView recyclerView;
     CharacterAdpter adapter;
     DBCharacterHelper dbHelper;
@@ -103,6 +105,13 @@ public class CharacterListActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.search:
                 onSearchRequested();
+                return true;
+            case R.id.grid_toggle:
+                isGrid = !isGrid;
+                adapter.isImage = isGrid;
+                supportInvalidateOptionsMenu();
+                recyclerView.setLayoutManager(isGrid ? new LinearLayoutManager(this) : new GridLayoutManager(this, 3));
+                adapter.notifyDataSetChanged();
                 return true;
             case R.id.favorites:
                 startActivity(new Intent(this, FavoriteCharacterListActivity.class));
