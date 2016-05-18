@@ -107,10 +107,11 @@ public class CharacterListActivity extends AppCompatActivity {
                 onSearchRequested();
                 return true;
             case R.id.grid_toggle:
+                adapter.isImage = !adapter.isImage;
                 isGrid = !isGrid;
-                adapter.isImage = !isGrid;
+                //adapter.isImage = !isGrid;
                 //supportInvalidateOptionsMenu();
-                recyclerView.setLayoutManager(isGrid ? new LinearLayoutManager(this) : new GridLayoutManager(this, 3));
+                recyclerView.setLayoutManager(isGrid ? new GridLayoutManager(this,3) : new LinearLayoutManager(this));
                 adapter.notifyDataSetChanged();
                 return true;
             case R.id.favorites:

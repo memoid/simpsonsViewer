@@ -28,7 +28,7 @@ public class CharacterAdpter extends RecyclerView.Adapter<CharacterAdpter.ViewHo
     public List<CharacterEntity> characterEntities = new ArrayList<>();
     private boolean twoPane;
     private AppCompatActivity activity;
-    public boolean isImage = false;
+    public boolean isImage;
 
     public CharacterAdpter(AppCompatActivity activity, boolean twoPane) {
         this.twoPane = twoPane;
