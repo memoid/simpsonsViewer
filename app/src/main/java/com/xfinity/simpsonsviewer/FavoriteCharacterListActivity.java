@@ -8,6 +8,8 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -28,7 +30,7 @@ import java.util.List;
 
 public class FavoriteCharacterListActivity extends AppCompatActivity {
 
-    private boolean mTwoPane;
+    private boolean mTwoPane, isGrid;
     RecyclerView recyclerView;
     CharacterAdpter adapter;
     DBCharacterHelper dbHelper;
@@ -75,11 +77,11 @@ public class FavoriteCharacterListActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.options_menu, menu);
+        inflater.inflate(R.menu.options_fav, menu);
 
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+/*        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         final SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));*/
 
         return true;
     }
@@ -89,6 +91,12 @@ public class FavoriteCharacterListActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.search:
                 onSearchRequested();
+                return true;
+            case R.id.grid_toggle:
+                adapter.isImage = !adapter.isImage;
+                isGrid = !isGrid;
+                recyclerView.setLayoutManager(isGrid ? new GridLayoutManager(this,3) : new LinearLayoutManager(this));
+                adapter.notifyDataSetChanged();
                 return true;
             default:
                 return false;
