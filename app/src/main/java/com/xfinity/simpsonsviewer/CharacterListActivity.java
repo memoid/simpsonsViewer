@@ -108,8 +108,8 @@ public class CharacterListActivity extends AppCompatActivity {
                 return true;
             case R.id.grid_toggle:
                 isGrid = !isGrid;
-                adapter.isImage = isGrid;
-                supportInvalidateOptionsMenu();
+                adapter.isImage = !isGrid;
+                //supportInvalidateOptionsMenu();
                 recyclerView.setLayoutManager(isGrid ? new LinearLayoutManager(this) : new GridLayoutManager(this, 3));
                 adapter.notifyDataSetChanged();
                 return true;

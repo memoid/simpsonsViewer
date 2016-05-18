@@ -45,7 +45,7 @@ public class CharacterAdpter extends RecyclerView.Adapter<CharacterAdpter.ViewHo
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.characterEntity = characterEntities.get(position);
-        if (isImage) {
+        if (!isImage) {
             holder.imageView.setVisibility(View.GONE);
             holder.textView.setVisibility(View.VISIBLE);
             holder.textView.setText(holder.characterEntity.getName());
@@ -54,10 +54,16 @@ public class CharacterAdpter extends RecyclerView.Adapter<CharacterAdpter.ViewHo
             holder.textView.setVisibility(View.GONE);
             if (holder.characterEntity!=null) {
                 if (!holder.characterEntity.getUrl().equals("")) {
-                    Glide.with(activity).load(holder.characterEntity.getUrl()).into(holder.imageView);
+                    Glide.with(activity).load(holder.characterEntity.getUrl())
+                            .override(300, 200)
+                            .fitCenter()
+                            .into(holder.imageView);
                 } else {
                     String url = "http://nerdreactor.com/wp-content/uploads/2012/12/Link.jpg";
-                    Glide.with(activity).load(url).into(holder.imageView);
+                    Glide.with(activity).load(url)
+                            .override(300, 200)
+                            .fitCenter()
+                            .into(holder.imageView);
                 }
             }
         }
